@@ -1,7 +1,7 @@
 import {BrowserRouter, Routes, Route }  from 'react-router-dom'
-import Login from "./pages/Login"
+import Login from "./pages/LoginPage"
 import Chat from "./pages/Chat"
-import Register from "./pages/Register"
+import Register from "./pages/RegisterPage"
 
 
 function App() {
