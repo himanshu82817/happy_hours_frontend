@@ -4,22 +4,43 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { TextField } from '@mui/material';
+import { loginApi } from '../api/auth';
+import CustomAlert from '../components/CustomAlert';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [showPassword, setShowPassword] = useState(false)
+  const [alert,setAlert] = useState(false)
+  const [alertMessage,setAlertMessage] = useState('')
+  const [alertType,setAlertType] = useState('')
+  const navigate  = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-
     let obj = {
       email:email,
       password:password
     }
-    console.log(obj);
+    loginApi(obj).then((res)=>{
+      console.log(res);
+      setAlertMessage(res.message)
+      setAlertType(res.success?'success':'error')
+      setAlert(true)
+      if(res.success){
+        setTimeout(() => {
+          navigate("/chat")
+          
+        },2000);
+      }
+      
+    }).catch(err=>{
+      console.log(err);
+      setAlertMessage('something went wrong')
+      setAlertType('error')
+      setAlert(true)
+    })
   };
 
   return (
@@ -28,10 +49,10 @@ const LoginPage = () => {
         <h2 className="text-2xl font-bold mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4 ">
-            <TextField  className='w-full' id="outlined-basic" label="email" variant="outlined"  value={email} onChange={(e) => setEmail(e.target.value)} />
+            <TextField  className='w-full' id="email" label="email" variant="outlined"  value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="mb-4">
-            <TextField className='w-full' id="outlined-basic" type={showPassword?"text":"password" } label="password" variant="outlined"  value={password} onChange={(e) => setPassword(e.target.value)}
+            <TextField className='w-full' id="password" type={showPassword?"text":"password" } label="password" variant="outlined"  value={password} onChange={(e) => setPassword(e.target.value)}
                 InputProps={{
 
                   endAdornment:(
@@ -57,13 +78,16 @@ const LoginPage = () => {
         </form>
         <p className="mt-4 text-sm text-gray-600">
           Don't have an account?{' '}
-          <a href="/register" className="text-blue-500 hover:text-blue-700">
+          <Link to="/register" className="text-blue-500 hover:text-blue-700">
             Register here
-          </a>
+          </Link>
         </p>
       </div>
+      <CustomAlert setOpen={setAlert} open={alert} message={alertMessage} type={alertType} />
     </div>
   );
+
+
 };
 
 export default LoginPage;

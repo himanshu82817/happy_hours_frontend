@@ -4,24 +4,35 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
+import { registerApi } from '../api/auth';
+import CustomAlert from '../components/CustomAlert';
+import { Link } from 'react-router-dom';
 
+const RegisterPage = () => { 
 
-const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false)
+  const [alert,setAlert] = useState(false)
+  const [alertMessage,setAlertMessage] = useState('')
+  const [alertType,setAlertType] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit =  (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('values')
     let obj = {
-      userName:username,
+      name:username,
       email:email,
       password:password
     }
-    console.log(obj);
+    registerApi(obj).then((res)=>{
+      console.log(res);
+      setAlertMessage(res.message)
+      setAlertType(res.success?'success':'error')
+      setAlert(true)
+    }).catch(err=>{
+      console.log(err);
+    })
   };
 
 
@@ -37,7 +48,7 @@ const RegisterPage = () => {
           <TextField className='w-full'  id="outlined-basic" label="email" variant="outlined"  value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="mb-4">
-          <TextField className='w-full'  id="outlined-basic" label="password" type="password" variant="outlined"  value={password} onChange={(e) => setPassword(e.target.value)}
+          <TextField className='w-full'  id="outlined-basic" label="password" type={showPassword?"text":"password"} variant="outlined"  value={password} onChange={(e) => setPassword(e.target.value)}
             InputProps={{
 
               endAdornment:(
@@ -64,11 +75,12 @@ const RegisterPage = () => {
         </form>
         <p className="mt-4 text-sm text-gray-600">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-500 hover:text-blue-700">
+          <Link to="/login" className="text-blue-500 hover:text-blue-700">
             SignIn here
-          </a>
+          </Link>
         </p>
       </div>
+      <CustomAlert setOpen={setAlert} open={alert} message={alertMessage} type={alertType} />
     </div>
   );
 };
